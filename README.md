@@ -11,21 +11,23 @@ I am currently working on adding a collection of research papers on Human thermo
 Lot of work to be done yet, but the initial results are encouraging :-)
 
 **Usage:**
+
 Start the app: *uvicorn main:app --host 0.0.0.0 --port 8000 --reload*
+
 FastAPI URL: *http://127.0.0.1/docs
 
 Sample outputs:
 
-*What 3 columns correlate most with the skin_temperature column ? Provide Pearson coefficient in the response.*
+*Prompt: What 3 columns correlate most with the skin_temperature column ? Provide Pearson coefficient in the response.*
 ![](images/output_1.png)
 
-*At what time did the highest core temperature occured and for how long ?*
+*Prompt: At what time did the highest core temperature occured and for how long ?*
 ![](images/output_2.png)
 
-*Print out standard deviation for all columns, and order from highest to lowest*
+*Prompt: Print out standard deviation for all columns, and order from highest to lowest*
 ![](images/output_3.png)
 
-*What is the average running speed in km/h and total duration of activity in minutes ?*
+*Prompt: What is the average running speed in km/h and total duration of activity in minutes ?*
 ![](images/output_4.png)
 
 *FastAPI endpoint parameters and the corresponding response example*
