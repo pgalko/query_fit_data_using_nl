@@ -4,9 +4,13 @@ This repository contains a Python scripts that utilizes OpenAI's GPT-powered API
 The package is delivered as a FastAPI web app and requires an OpenAI API key, and a PostgreSQL database to function. I am using a free tier Supabase but a local instance can also be used. The OpenAI API key needs to be stored in a 'OPENAI_API_KEY' environment variable and the database connection string is stored in plain text in the database.py module (that is lame Palo :-)).
 The required python libraries are listed in the requirements.txt file which is a bit if a mess and needs a cleanup :-).
 
-The script will install the DB schema into an existing blank database upon the first execution. Subsequently the user will need to be creaded using FastAPI **/signup** endpoint and loged in using the **/login** endpoint. The fit file is supplied for parsing and data storage using **/fit_activities** endpoint. A sample fit file to play around with is included in the repo.
+The script will install the DB schema into an existing blank database upon the first execution. Subsequently the user will need to be creaded using FastAPI **/signup** endpoint and loged in using the **/login** endpoint. The fit file is supplied for parsing and data storage using **/fit_activities** endpoint.A bulk upload is available via **/bulk_upload_fit** endpoint suplying a zip file containing multiple fit files. A sample fit files to play around with are included in the repo.
 
 I am currently working on adding a collection of research papers on Human thermodynamics and energetics that will be stored in a vector database such as Pinecone or Soma and added in using Langchain to enhance the accuracy and relevancy of the answers (Any knowledgebase or the collection can be added).
+
+**Usage:**
+Start the app: *uvicorn main:app --host 0.0.0.0 --port 8000 --reload*
+FastAPI URL: *http://127.0.0.1/docs
 
 Sample outputs:
 
@@ -21,3 +25,6 @@ Sample outputs:
 
 *What is the average running speed in km/h and total duration of activity in minutes ?*
 ![](images/output_4.png)
+
+*FastAPI endpoint example*
+![](images/output_5.png)
