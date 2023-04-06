@@ -534,7 +534,7 @@ def get_fit_data(activity_id: int, athlete: UserOut = Depends(get_current_user))
 
 #------GET A RESPONSE FROM LLM COMBINING DATA FROM PANDAS DATAFRAME AND THE DOCUMENT SEARCH----------------------------------------
 
-@app.get('/nat_lang_query', summary="Generate answers using OpenAI API", tags=["Experimental"])
+@app.get('/nat_lang_query', summary="Generate answers from DB data and the research paper (added for context), using OpenAI API", tags=["Experimental"])
 def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity_id: int, model: str = 'text-davinci-003', athlete: UserOut = Depends(get_current_user)):
 
     # check that the table is valid
