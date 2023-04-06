@@ -3,6 +3,15 @@ This repository contains a Python scripts that utilize OpenAI's GPT-powered API 
 
 It takes ```prompt```, ```doc_path```, ```table```, ```activity_id```, and ```model(optional)``` as inputs, and retrieves the relevant data from the specified table (csv_data or fit_data). The endpoint then creates a pandas DataFrame containing the data, cleans it, and loads the research document specified in the  ```doc_path``` parameter using the UnstructuredPDFLoader. The document is split into chunks and passed to the Chroma vector database, which is then used to create a RetrievalQA instance. 
 
+The below diagrams ilustrates the process of ingestion of the relevant research documents into vector database (Chroma) and the query flow where the data from vector database is combined with the data from pandas dataframe and fed to LLM. Source: https://blog.langchain.dev/tutorial-chatgpt-over-your-data/
+* Ingestion:
+
+![](images/ingest.png)
+
+* Query Flow:
+
+![](images/query.png)
+
 The endpoint combines the DataFrame and the document search tool to create a ZeroShotAgent, which is then used to generate the response based on the input prompt. This endpoint provides an efficient way to leverage natural language processing to analyze and extract information from both structured (pandas DataFrames) and unstructured data (pdf documents). A sample research paper is included in the repo (*Heart_Rate_Running_Speed_Index_May_Be_an_Efficient.4.pdf*).
 
 The package is delivered as a FastAPI web app and requires an OpenAI API key, and a PostgreSQL database to function. I am using a free tier Supabase but a local instance can also be used. The OpenAI API key needs to be stored in a 'OPENAI_API_KEY' environment variable or in a "openai_api_key" variable (not secure) and the database connection string is stored in plain text in the database.py module (that is lame Palo :-)).
