@@ -1,4 +1,4 @@
-# Query Fit or CSV data using Natural Language
+# Query Fit or CSV data using Natural Language. Add a relevant research paper including formulas to add context to the query.
 This repository contains a Python scripts that utilize OpenAI's GPT-powered API to query and generate answers for a given prompt in natural language. The script exposes Natural Language Query Endpoint: **/nat_lang_query** endpoint that allows users to generate answers using OpenAI's API. 
 
 It takes *prompt, doc_path, table, activity_id, and model(Optional)* as inputs, and retrieves the relevant data from the specified table (csv_data or fit_data). The endpoint then creates a pandas DataFrame containing the data, cleans it, and loads the research document specified by doc_path using the UnstructuredPDFLoader. The document is split into chunks and passed to the Chroma vector database, which is then used to create a RetrievalQA instance. 
