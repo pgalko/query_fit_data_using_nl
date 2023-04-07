@@ -1,5 +1,17 @@
-# Query Fit or CSV data using Natural Language. Add a relevant research paper including formulas and reasoning to add context to the query.
-This repository contains a Python scripts that utilize OpenAI's GPT-powered API to query and generate answers for a given prompt in natural language. The script exposes Natural Language Query Endpoint: **/nat_lang_query** endpoint that allows users to generate answers using OpenAI's API. 
+# Query Fit or CSV Data Using Natural Language: Enhance Analysis with Relevant Research Papers for Contextual Formulas and Reasoning.
+This repository contains a code for FastAPI app that utilize OpenAI's GPT-powered API to query and generate answers for a given prompt in natural language. The script exposes Natural Language Query Endpoint: **/nat_lang_query** that allows users to generate answers using OpenAI's API. 
+
+**Project Workflow:** This application is designed to process Garmin FIT files and analyze them alongside relevant research papers. The workflow consists of the following steps:
+
+* Ingest the supplied Garmin FIT file.
+* Parse the FIT file and store the data in a PostgreSQL database tables.
+* Split the supplied PDF research paper into chunks and store them in an in-memory Chroma vector database.
+* Accept user prompts in English to specify the desired analysis.
+* Query the vector database to find matches related to the user prompt.
+* Query the Pandas DataFrame to retrieve the specified data from the prompt.
+* Send the data from both sources to the LLM (Large Language Model) for further processing and analysis.
+
+This approach enables seamless integration of structured data (Garmin FIT files) and unstructured data (research papers) to provide comprehensive insights and context for coaches and athletes. Furthermore, it enhances analysis by incorporating text from research papers that the LLM might not have encountered during training, resulting in a more robust and informed understanding of the data.
 
 It takes ```prompt```, ```doc_path```, ```table```, ```activity_id```, and ```model(optional)``` as inputs, and retrieves the relevant data from the specified table (csv_data or fit_data). The endpoint then creates a pandas DataFrame containing the data, cleans it, and loads the research document specified in the  ```doc_path``` parameter using the UnstructuredPDFLoader. The document is split into chunks and passed to the Chroma vector database, which is then used to create a RetrievalQA instance. 
 
