@@ -8,7 +8,7 @@ This repository contains a code for FastAPI app that utilize OpenAI's GPT-powere
 * Split the supplied PDF research paper into chunks and store them in an in-memory Chroma vector database.
 * Accept user prompts in English to specify the desired analysis.
 * Query the vector database to find matches related to the user prompt.
-* Query the Pandas DataFrame to retrieve the specified data from the prompt.
+* Query the Pandas DataFrame, which is generated from the PostreSQL database query, to retrieve the data specified in the user prompt.
 * Send the data from both sources to the LLM (Large Language Model) for further processing and analysis.
 
 This approach enables seamless integration of structured data (Garmin FIT files) and unstructured data (research papers) to provide comprehensive insights and context for coaches and athletes. Furthermore, it enhances analysis by incorporating text from research papers that the LLM might not have encountered during training, resulting in a more robust and informed understanding of the data.
