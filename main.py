@@ -11,13 +11,13 @@ from io import StringIO, BytesIO
 from psycopg2 import errors
 from fitparse import FitFile
 from zipfile import ZipFile
-import math
 import os
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.llms import OpenAI
+from langchain.utilities import GoogleSerperAPIWrapper
 from langchain.chains import RetrievalQA
 from langchain.document_loaders import UnstructuredPDFLoader
 from langchain.agents import Tool
@@ -34,10 +34,17 @@ app = FastAPI()
 
 # Openai_API_key
 api_key = os.environ.get('OPENAI_API_KEY')
-# Define LLN
+# Serper API key
+serper_api_key = os.environ.get('SERPER_API_KEY')
+
+# Define LLM
 llm = OpenAI(temperature=0,openai_api_key=api_key,verbose=True, max_retries=3)
+
 # Define embeddings
 embeddings = OpenAIEmbeddings()
+
+# Define google search
+search = GoogleSerperAPIWrapper(serper_api_key=serper_api_key, verbose=True)
 
 # Create DB Schema if does not exist
 with Database() as db:
@@ -597,17 +604,23 @@ def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity
         if input_variables is None:
             input_variables = ["df", "input", "agent_scratchpad"]
 
-        # Define Tools that the agent will be able to use
+        # Define Tools that will be available to the agent (1. pandas tool, 2. document search tool, 3. google search tool ) 
         tools = [
             PythonAstREPLTool(
                             locals={"df": df}
                             ),
             Tool(
-                name = "HR-Running-Speed-Index",
+                name = "pdf-doc-search",
                 func=docs_db.run,
-                description=" Use this tool to provide formulas and logic to calculate HR-Running-Speed-Index. Input should be a fully formed question."
+                description=" use this tool to calculate the HR-Running-Speed-Index. Input should be a fully formed question."
+                ),
+            Tool(
+                name = "google-search",
+                func=search.run,
+                description=" use this tool to search Google using Serper API.",
                 )
         ]
+
         prompt = ZeroShotAgent.create_prompt(
             tools, prefix=prefix, suffix=suffix, input_variables=input_variables
         )
