@@ -575,7 +575,7 @@ def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     texts = text_splitter.split_documents(data)
 
-    docsearch = Chroma.from_documents(texts, embeddings, collection_name="hr-run-speed-index")
+    docsearch = Chroma.from_documents(texts, embeddings, collection_name="pdf-doc-search")
     docs_db = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=docsearch.as_retriever())
 
     # Create an agent combining pandas and document search tools
