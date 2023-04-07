@@ -49,8 +49,11 @@ FastAPI URL: *http://127.0.0.1/docs
 
 **Sample outputs:**
 
-*Prompt: Get the formula for the HR-Running-Speed-Index, then plug in the mean hr and mean speed data from the df, and the standing hr of 56, maximal hr of 182, and the vo2max running speed of 3.5 m/s. Calculate the results and return the HR-Running-Speed-Index value in numeric format together with the formula used.*
+*Prompt (Withouth Google Search): Get the formula for the HR-Running-Speed-Index, then plug in the mean hr and mean speed data from the df, and the standing hr of 56, maximal hr of 182, and the vo2max running speed of 3.5 m/s. Calculate the results and return the HR-Running-Speed-Index value in numeric format together with the formula used.*
 ![](images/output_6.png)
+
+*Prompt (With Google Search): Get the formula for the HR-Running-Speed-Index, then plug in the mean hr and mean speed data from the df, and the standing hr of 56, maximal hr of 182, and the vo2max running speed of 4.5 m/s. Calculate the results and return the HR-Running-Speed-Index value in numeric format together with the formula used.*
+![](images/output_7.png)
 
 *Prompt: What 3 columns correlate most with the skin_temperature column ? Provide Pearson coefficient in the response.*
 ![](images/output_1.png)
