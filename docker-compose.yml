@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  fastapi:
+    image: "fastapi"
+    container_name: fastapi
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL
+      - DATABASE_NAME
+      - DATABASE_USERNAME
+      - DATABASE_PASSWORD
+      - OPENAI_API_KEY
+      - SERPER_API_KEY
+    ports:
+      - "8082:80"
+    volumes:
+      - ./:/app
+    depends_on:
+      - database
+
+  database:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: "${DATABASE_USERNAME}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
+      POSTGRES_DB: "${DATABASE_NAME}"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+
+volumes:
+  database-data:
+    driver: local

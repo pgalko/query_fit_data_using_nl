@@ -1,6 +1,14 @@
+import os
+
 import psycopg2
 
-DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/database_name" # Local instance connection string
+db_url = os.environ["DATABASE_URL"]
+db_username = os.environ["DATABASE_USERNAME"]
+db_password = os.environ["DATABASE_PASSWORD"]
+db_name = os.environ["DATABASE_NAME"]
+
+DATABASE_URL = f"postgresql://{db_username}:{db_password}@{db_url}/{db_name}"
+
 DATABASE_URL_SUPABASE = "postgresql://postgres:password@db.database.supabase.co:5432/postgres" # Supabase connection string
 CREATE_SCHEMA = '''
 SET statement_timeout = 0;
@@ -116,7 +124,7 @@ ALTER TABLE ONLY public.fit_data
 '''
 
 class Database:   
-    def __init__(self, name=DATABASE_URL_SUPABASE): # Replace with DATABESE_URL if using local instance
+    def __init__(self, name=DATABASE_URL): # Replace with DATABESE_URL if using local instance
         self._conn = psycopg2.connect(name)
         self._cursor = self._conn.cursor()
 

@@ -47,6 +47,21 @@ Start the app: *uvicorn main:app --host 0.0.0.0 --port 8000 --reload*
 
 FastAPI URL: *http://127.0.0.1/docs
 
+
+**Usage with Docker:**
+
+To build the docker image:
+```bash
+make build
+```
+
+To run the application:
+```bash
+make serve
+```
+
+This will run the FastAPI application and a PostgreSQL database using a docker-compose configuration.
+
 **Sample outputs:**
 
 *Prompt (Withouth Google Search): Get the formula for the HR-Running-Speed-Index, then plug in the mean hr and mean speed data from the df, and the standing hr of 56, maximal hr of 182, and the vo2max running speed of 3.5 m/s. Calculate the results and return the HR-Running-Speed-Index value in numeric format together with the formula used.*
