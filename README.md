@@ -1,4 +1,4 @@
-# Query Data from Fit or CSV Using Natural Language. Enhance Analysis with Relevant Research Papers for Contextual Formulas and Reasoning.
+# Query Data from Fit or CSV Using Natural Language. Enhance Analysis with an Ability to Query Relevant Research Papers and the Google Search API for Contextual Formulas and Reasoning.
 This repository contains a code for FastAPI app that utilize OpenAI's GPT-powered API to query and generate answers for a given prompt in natural language. The script exposes Natural Language Query Endpoint: **/nat_lang_query** that allows users to generate answers using OpenAI's API. 
 
 **Project Workflow:** This application is designed to process Garmin FIT files and analyze them alongside relevant research papers. The workflow consists of the following steps:
