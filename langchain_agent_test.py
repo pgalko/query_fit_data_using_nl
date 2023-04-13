@@ -18,13 +18,15 @@ prompt = " Get the formula for the HR-Running-Speed-Index, then plug in the mean
 document_path =  "Heart_Rate_Running_Speed_Index_May_Be_an_Efficient.4.pdf"
 
 #----------------COMPONENTS (Models,Embeddings,Wrappers) ----------------
-
-from langchain.llms import OpenAI
+# Disable warnings
+import warnings
+warnings.filterwarnings("ignore")
+from langchain.llms import OpenAIChat
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.utilities import GoogleSerperAPIWrapper
 
 # Create an LLM object
-llm = OpenAI(temperature=0,openai_api_key=api_key,verbose=True)
+llm = OpenAIChat(temperature=0,openai_api_key=api_key,model_name='gpt-3.5-turbo',max_tokens=1000, verbose=True)
 # Create an embeddings object
 embeddings = OpenAIEmbeddings()
 # Create a wrapper for the Google Serper API
@@ -61,11 +63,12 @@ vector_store = Chroma.from_documents(texts, embeddings, collection_name="pdf-doc
 # Create a retriever object
 retriever = vector_store.as_retriever()
 
-# Print the result of the search query
-print(retriever.get_relevant_documents(prompt))
-
 # Create a chain object. This is used to create the tool that will be used by the agent.
 docs_db = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, verbose=True)
+
+# Print the result of the query to the vector store (if any)
+result = docs_db({"query": prompt})
+print(result["result"])
 
 #----------------AGENT----------------
 
@@ -80,7 +83,7 @@ from langchain.tools.python.tool import PythonAstREPLTool
 from langchain.agents import Tool
 import pandas as pd
 
-# Create Agent, and specify tools that the agent wil have access to
+# Create Agent, and specify tools that the agent will have access to
 def pandas_dataframe_agent(
     llm: BaseLLM,
     df: Any,
@@ -101,20 +104,18 @@ def pandas_dataframe_agent(
         
     # Specify the tools that the agent will have access to   
     tools = [
-        PythonAstREPLTool(
-                         name="pandas_df",
-                         locals={"df": df},
-                         description=" use this tool to query the Pandas Dataframe and manipulate the output.",
-                         ),
         Tool(
             name = "pdf-doc-search",
             func=docs_db.run,
-            description=" use this tool to query the documents stored in the local Chroma vector DB."
+            description=" usefull when you need to search the local document repository."
             ),
+        PythonAstREPLTool(
+                         locals={"df": df},
+                         ),
         Tool(
             name = "google-search",
             func=search.run,
-            description=" use this tool to search Google using Serper API.",
+            description=" usefull when you need to search the internet.",
             )
     ]
     
@@ -122,14 +123,16 @@ def pandas_dataframe_agent(
     prompt = ZeroShotAgent.create_prompt(
         tools, prefix=prefix, suffix=suffix, input_variables=input_variables
     )
-    
+
+    # Reduce the size of the dataframe to be used in the prompt
     partial_prompt = prompt.partial(df=str(df.head()))
+
     llm_chain = LLMChain(
         llm=llm,
         prompt=partial_prompt,
         callback_manager=callback_manager,
     )
-    
+
     # Specify the allowed tools that the agent will have access to
     tool_names = [tool.name for tool in tools]
     agent = ZeroShotAgent(llm_chain=llm_chain, allowed_tools=tool_names, **kwargs)
@@ -140,6 +143,15 @@ def pandas_dataframe_agent(
 # Here is where the magic happens :-). The dataframe and the document are passed to the agent, which is then used to generate a response.
 agent = pandas_dataframe_agent(llm, df, verbose=True)
 
-# Generate a response from the agent
-response = agent.run(prompt)
+#---------------RESPONSE AND TOKEN USAGE----------------
+
+from langchain.callbacks import get_openai_callback
+
+with get_openai_callback() as cb:
+    response = agent.run(prompt)
+    print(f"Succesful Requests: {cb.successful_requests}")
+    print(f"Total Tokens: {cb.total_tokens}")
+    print(f"Prompt Tokens: {cb.prompt_tokens}")
+    print(f"Completion Tokens: {cb.completion_tokens}")
+    print(f"Total Cost (USD): ${cb.total_cost}")
 
