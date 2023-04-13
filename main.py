@@ -16,7 +16,10 @@ import os
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.llms import OpenAI
+# Disable warnings
+import warnings
+warnings.filterwarnings("ignore")
+from langchain.llms import OpenAIChat
 from langchain.utilities import GoogleSerperAPIWrapper
 from langchain.chains import RetrievalQA
 from langchain.document_loaders import UnstructuredPDFLoader
@@ -38,7 +41,7 @@ api_key = os.environ.get('OPENAI_API_KEY')
 serper_api_key = os.environ.get('SERPER_API_KEY')
 
 # Define LLM
-llm = OpenAI(temperature=0,openai_api_key=api_key,verbose=True, max_retries=3)
+llm = OpenAIChat(temperature=0,openai_api_key=api_key,model_name='gpt-3.5-turbo',max_tokens=1000, verbose=True))
 
 # Define embeddings
 embeddings = OpenAIEmbeddings()
@@ -542,7 +545,10 @@ def get_fit_data(activity_id: int, athlete: UserOut = Depends(get_current_user))
 #------GET A RESPONSE FROM LLM COMBINING DATA FROM PANDAS DATAFRAME AND THE DOCUMENT SEARCH----------------------------------------
 
 @app.get('/nat_lang_query', summary="Generate answers from DB data and the research paper (added for context), using OpenAI API", tags=["Experimental"])
-def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity_id: int, model: str = 'text-davinci-003', athlete: UserOut = Depends(get_current_user)):
+def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity_id: int, athlete: UserOut = Depends(get_current_user)):
+
+    # Print the prompt that will be sent to LLM
+    print("\033[95m\033[1m" + "\nPROMPT:\n" + prompt + "\033[0m\033[0m")
 
     # check that the table is valid
     if table not in ['csv_data', 'fit_data']:
@@ -597,27 +603,26 @@ def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity
         **kwargs: Any,
     ) -> AgentExecutor:
         """Construct a pandas agent from an LLM and dataframe."""
-        import pandas as pd
 
         if not isinstance(df, pd.DataFrame):
             raise ValueError(f"Expected pandas object, got {type(df)}")
         if input_variables is None:
             input_variables = ["df", "input", "agent_scratchpad"]
 
-        # Define Tools that will be available to the agent (1. pandas tool, 2. document search tool, 3. google search tool ) 
+        # Specify the tools that the agent will have access to   
         tools = [
-            PythonAstREPLTool(
-                            locals={"df": df}
-                            ),
             Tool(
                 name = "pdf-doc-search",
                 func=docs_db.run,
-                description=" use this tool to calculate the HR-Running-Speed-Index. Input should be a fully formed question."
+                description=" usefull when you need to search the local document repository."
                 ),
+            PythonAstREPLTool(
+                            locals={"df": df},
+                            ),
             Tool(
                 name = "google-search",
                 func=search.run,
-                description=" use this tool to search Google using Serper API.",
+                description=" usefull when you need to search the internet.",
                 )
         ]
 
@@ -638,10 +643,16 @@ def get_pandas_docsearch_response(prompt:str, doc_path:str, table: str, activity
     # Here is where the magic happens :-). The dataframe and the document are passed to the agent, which is then used to generate the response.
     agent = create_agent(llm, df, verbose=True)
 
-    response = agent.run(prompt)
+    from langchain.callbacks import get_openai_callback
+
+    with get_openai_callback() as cb:
+        response = agent.run(prompt)
+        print(f"Succesful Requests: {cb.successful_requests}")
+        print(f"Total Tokens: {cb.total_tokens}")
+        print(f"Prompt Tokens: {cb.prompt_tokens}")
+        print(f"Completion Tokens: {cb.completion_tokens}")
+        print(f"Total Cost (USD): ${cb.total_cost}")
 
     return response
-
-
 
 
