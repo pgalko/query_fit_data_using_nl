@@ -1,7 +1,7 @@
 chromadb==0.3.21
 fastapi==0.95.0
 fitparse==1.2.0
-langchain==0.0.129
+langchain==0.0.138
 openai==0.27.4
 pandas==1.5.3
 passlib==1.7.4
